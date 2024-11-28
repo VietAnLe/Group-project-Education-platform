@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Teacher to Course</title>
+</head>
+<body>
+    <h1>Assign Teacher to Course</h1>
+
+    <form method="POST" action="{{ url_for('admin_assign_teacher') }}">
+        <label for="teacher_id">Select Teacher:</label>
+        <select name="teacher_id" id="teacher_id" required>
+            <option value="" disabled selected>Select a teacher</option>
+            {% for teacher in teachers %}
+            <option value="{{ teacher[0] }}">{{ teacher[1] }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="course_id">Select Course:</label>
+        <select name="course_id" id="course_id" required>
+            <option value="" disabled selected>Select a course</option>
+            {% for course in courses %}
+            <option value="{{ course[0] }}">{{ course[1] }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Assign</button>
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul>
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Teachers</title>
+</head>
+<body>
+    <h1>Manage Teachers</h1>
+
+    <!-- Add New Teacher Form -->
+    <h2>Add New Teacher</h2>
+    <form action="{{ url_for('admin_manage_teachers') }}" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="submit" name="add_teacher">Add Teacher</button>
+    </form>
+
+    <!-- List of Existing Teachers -->
+    <h2>Existing Teachers</h2>
+    {% if teachers %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher[0] }}</td>
+                <td>{{ teacher[1] }}</td>
+                <td>{{ teacher[2] }}</td>
+                <td>
+                    <!-- Remove Teacher Form -->
+                    <form action="{{ url_for('admin_manage_teachers') }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="teacher_id" value="{{ teacher[0] }}">
+                        <button type="submit" name="remove_teacher">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No teachers found.</p>
+    {% endif %}
+
+    <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

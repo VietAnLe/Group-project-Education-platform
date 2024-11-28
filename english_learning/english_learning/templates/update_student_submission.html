@@ -1,0 +1,17 @@
+{% for student_id, submission in submissions.items() %}
+  <h3>Student ID: {{ student_id }}</h3>
+  <form method="POST" action="{{ url_for('update_student_submission', assignment_id=assignment_id, student_id=student_id) }}">
+    <label>Grade:</label>
+    <input type="text" name="grade" value="{{ submission.grade }}">
+    <label>Feedback:</label>
+    <textarea name="feedback">{{ submission.feedback }}</textarea>
+
+    {% for answer in submission.answers %}
+      <label>Answer for Question {{ answer.question_id }}:</label>
+      <input type="text" name="answer_{{ loop.index }}" value="{{ answer.answer }}">
+      <input type="hidden" name="answer_id_{{ loop.index }}" value="{{ answer.answer_id }}">
+    {% endfor %}
+
+    <button type="submit">Update Submission</button>
+  </form>
+{% endfor %}

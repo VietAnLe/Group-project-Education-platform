@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Assignment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Create New Assignment</h1>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data">
+            <!-- Assignment Title and Description -->
+            <div class="form-group">
+                <label for="title">Assignment Title</label>
+                <input type="text" name="title" id="title" class="form-control" value="{{ assignment.title }}" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" class="form-control" rows="4" required>{{ assignment.description }}</textarea>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="form-group">
+                <label for="assignment_images">Upload Assignment Images</label>
+                <input type="file" name="assignment_images" id="assignment_images" class="form-control" multiple>
+            </div>
+
+            <!-- Question Form Fields -->
+            <div class="form-group">
+                <label for="question_count">Number of Questions</label>
+                <input type="number" name="question_count" id="question_count" class="form-control" value="{{ question_count }}" min="1" required>
+            </div>
+
+            <!-- Dynamic Question Fields -->
+            <div id="questions-container">
+                {% for i in range(1, question_count + 1) %}
+                <div class="question-form">
+                    <h3>Question {{ i }}</h3>
+                    <div class="form-group">
+                        <label for="question_type_{{ i }}">Question Type</label>
+                        <select name="question_type_{{ i }}" id="question_type_{{ i }}" class="form-control" required>
+                            <option value="MCQ">Multiple Choice</option>
+                            <option value="FIB">Fill in the Blank</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="question_text_{{ i }}">Question Text</label>
+                        <textarea name="question_text_{{ i }}" id="question_text_{{ i }}" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="correct_answer_{{ i }}">Correct Answer</label>
+                        <input type="text" name="correct_answer_{{ i }}" id="correct_answer_{{ i }}" class="form-control" required>
+                    </div>
+
+                    <!-- MCQ Options (only shown for MCQ type) -->
+                    <div id="mcq-options-{{ i }}" class="mcq-options">
+                        <div class="form-group">
+                            <label for="option_a_{{ i }}">Option A</label>
+                            <input type="text" name="option_a_{{ i }}" id="option_a_{{ i }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="option_b_{{ i }}">Option B</label>
+                            <input type="text" name="option_b_{{ i }}" id="option_b_{{ i }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="option_c_{{ i }}">Option C</label>
+                            <input type="text" name="option_c_{{ i }}" id="option_c_{{ i }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="option_d_{{ i }}">Option D</label>
+                            <input type="text" name="option_d_{{ i }}" id="option_d_{{ i }}" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Create Assignment</button>
+        </form>
+    </div>
+
+    <script>
+        // Show/Hide MCQ options based on selected question type
+        const questionCountInput = document.getElementById('question_count');
+        questionCountInput.addEventListener('input', updateQuestionForms);
+
+        function updateQuestionForms() {
+            const questionsContainer = document.getElementById('questions-container');
+            const questionCount = parseInt(questionCountInput.value, 10);
+
+            // Clear current questions
+            questionsContainer.innerHTML = '';
+
+            for (let i = 1; i <= questionCount; i++) {
+                // Create question form
+                const questionForm = document.createElement('div');
+                questionForm.classList.add('question-form');
+                questionForm.innerHTML = `
+                    <h3>Question ${i}</h3>
+                    <div class="form-group">
+                        <label for="question_type_${i}">Question Type</label>
+                        <select name="question_type_${i}" id="question_type_${i}" class="form-control" required>
+                            <option value="MCQ">Multiple Choice</option>
+                            <option value="FIB">Fill in the Blank</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="question_text_${i}">Question Text</label>
+                        <textarea name="question_text_${i}" id="question_text_${i}" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="correct_answer_${i}">Correct Answer</label>
+                        <input type="text" name="correct_answer_${i}" id="correct_answer_${i}" class="form-control" required>
+                    </div>
+                    <div id="mcq-options-${i}" class="mcq-options">
+                        <div class="form-group">
+                            <label for="option_a_${i}">Option A</label>
+                            <input type="text" name="option_a_${i}" id="option_a_${i}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="option_b_${i}">Option B</label>
+                            <input type="text" name="option_b_${i}" id="option_b_${i}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="option_c_${i}">Option C</label>
+                            <input type="text" name="option_c_${i}" id="option_c_${i}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="option_d_${i}">Option D</label>
+                            <input type="text" name="option_d_${i}" id="option_d_${i}" class="form-control">
+                        </div>
+                    </div>
+                `;
+
+                // Append the new question form to the container
+                questionsContainer.appendChild(questionForm);
+            }
+        }
+
+        // Toggle visibility of MCQ options based on the selected question type
+        document.addEventListener('change', function(event) {
+            if (event.target.id.startsWith('question_type_')) {
+                const questionIndex = event.target.id.split('_')[2];
+                const mcqOptionsDiv = document.getElementById(`mcq-options-${questionIndex}`);
+                if (event.target.value === 'MCQ') {
+                    mcqOptionsDiv.style.display = 'block';
+                } else {
+                    mcqOptionsDiv.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

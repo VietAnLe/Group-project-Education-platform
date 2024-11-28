@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2>Admin Dashboard</h2>
+<p>Welcome, {{ session['username'] }}!</p>
+<div>
+    <p>Total Teachers: {{ total_teachers }}</p>
+    <p>Total Courses: {{ total_courses }}</p>
+    <p>Total Lessons: {{ total_lessons }}</p>
+    <p>Total Enrollments: {{ total_enrollments }}</p>
+</div>
+<ul>
+    <li><a href="{{ url_for('admin_manage_enrollments') }}">Manage Student Enrollments</a></li>
+        <li><a href="{{ url_for('admin_manage_lessons') }}">Manage Lessons</a></li> 
+        <li><a href="{{ url_for('admin_manage_courses') }}">Manage Courses</a></li>
+        <li><a href="{{ url_for('admin_manage_teachers') }}">Manage Teachers</a></li>
+        <li><a href="{{ url_for('admin_assign_teacher') }}">Assign Teacher to Course</a></li>
+        
+</ul>
+{% endblock %}

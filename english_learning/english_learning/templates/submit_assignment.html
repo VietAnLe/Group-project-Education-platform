@@ -1,0 +1,41 @@
+<h1>{{ assignment.title }}</h1>
+<p>{{ assignment.description }}</p>
+
+{% if assignment_images %}
+    <div class="assignment-images">
+        {% for image in assignment_images %}
+            <img src="{{ url_for('static', filename=image[7:]) }}" alt="Assignment Image">
+        {% endfor %}
+    </div>
+{% endif %}
+
+<form method="POST">
+    {% for question in questions %}
+        <div class="question">
+            <p><strong>Question {{ loop.index }}:</strong> {{ question[2] }}</p> <!-- Question text -->
+            
+            {% if question[1] == 'MCQ' %}
+                <label>
+                    <input type="radio" name="answer_{{ question[0] }}" value="A">
+                    <strong>A:</strong> {{ question[4] }}
+                </label><br>
+                <label>
+                    <input type="radio" name="answer_{{ question[0] }}" value="B">
+                    <strong>B:</strong> {{ question[5] }}
+                </label><br>
+                <label>
+                    <input type="radio" name="answer_{{ question[0] }}" value="C">
+                    <strong>C:</strong> {{ question[6] }}
+                </label><br>
+                <label>
+                    <input type="radio" name="answer_{{ question[0] }}" value="D">
+                    <strong>D:</strong> {{ question[7] }}
+                </label><br>
+            {% elif question[1] == 'FIB' %}
+                <label for="answer_{{ question[0] }}">Your Answer:</label>
+                <input type="text" name="answer_{{ question[0] }}" required><br>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <button type="submit">Submit</button>
+</form>

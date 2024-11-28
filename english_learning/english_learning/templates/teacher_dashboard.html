@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+</head>
+<body>
+<h2>Teacher Dashboard</h2>
+<p>Welcome, {{ session['username'] }}!</p>
+
+<h1>Teacher Dashboard</h1>
+<h2>Assigned Courses</h2>
+{% if assigned_courses %}
+    <ul>
+        {% for course in assigned_courses %}
+            <li>
+                <strong>{{ course.name }}</strong>
+                <ul>
+                    <li><a href="{{ url_for('teacher_manage_lessons', course_id=course['id']) }}">Manage Lessons</a></li>
+                    <li><a href="{{ url_for('create_assignment', course_id=course['id']) }}">Create Assignment</a></li>
+                    <!-- Loop through assignments for this course -->
+                    {% for assignment in course.assignments %}
+                        <li>
+                            {{ assignment[1] }} <!-- Assignment title -->
+                            <a href="{{ url_for('edit_assignment', course_id=course['id'], assignment_id=assignment[0]) }}">Edit Assignment</a>
+
+                            <!-- You need to provide student_id here. Let's assume you have student data -->
+                            {% for submission in assignment.submissions %}
+                                <a href="{{ url_for('update_student_submission', course_id=course['id'], assignment_id=assignment[0], student_id=submission.student_id) }}">
+                                    Edit {{ submission.student_name }}'s Assignment
+                                </a>
+                            {% endfor %}
+
+                            <!-- Link to View Student Submissions -->
+                            <a href="{{ url_for('view_student_submissions', assignment_id=assignment[0], course_id=course['id']) }}">View Submissions</a>
+                        </li>
+                    {% else %}
+                        <li>No assignments available for this course.</li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No courses assigned yet.</p>
+{% endif %}
+<a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

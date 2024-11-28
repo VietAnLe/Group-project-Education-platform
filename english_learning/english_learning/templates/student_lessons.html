@@ -1,0 +1,33 @@
+<h1>Lessons for Course ID: {{ course_id }}</h1>
+
+{% if lessons %}
+    {% for lesson in lessons %}
+        <div>
+            <h2>{{ lesson['title'] }}</h2>
+            <p>{{ lesson['content'] }}</p>
+            
+            {% if lesson['video_url'] %}
+                <p>Video: <a href="{{ lesson['video_url'] }}" target="_blank">Watch Video</a></p>
+            {% endif %}
+            
+            {% if lesson['file_path'] %}
+                {% set file_path = lesson['file_path'] %}
+                {% if file_path.startswith('static/') %}
+                    {% set file_path = file_path[7:] %} <!-- Strip the 'static/' part -->
+                {% endif %}
+                <p>Download PDF: <a href="{{ url_for('static', filename=file_path) }}" target="_blank">Download</a></p>
+            {% endif %}
+            
+            {% if lesson['video_path'] %}
+                {% set video_path = lesson['video_path'] %}
+                {% if video_path.startswith('static/') %}
+                    {% set video_path = video_path[7:] %} <!-- Strip the 'static/' part -->
+                {% endif %}
+                <p>Video File: <a href="{{ url_for('static', filename=video_path) }}" target="_blank">Watch Video</a></p>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No lessons available for this course yet.</p>
+{% endif %}
+<a href="{{ url_for('student_dashboard') }}">Back to Dashboard</a>

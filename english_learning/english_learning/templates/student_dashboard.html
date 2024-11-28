@@ -1,0 +1,48 @@
+<h2>Welcome, {{ session['username'] }}!</h2>
+
+<h3>Available Courses</h3>
+{% if courses %}
+    {% for course in courses %}
+        <div>
+            <h4>{{ course[1] }}</h4> <!-- Course name -->
+            <p>Teacher: {{ course[2] }}</p> <!-- Teacher name -->
+            <form action="{{ url_for('student_join_course') }}" method="POST">
+                <input type="hidden" name="course_id" value="{{ course[0] }}">
+                <button type="submit">Join Course</button>
+            </form>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No available courses to join.</p>
+{% endif %}
+
+<h2>Your Enrolled Courses</h2>
+{% if enrolled_courses %}
+    {% for course in enrolled_courses %}
+        <div>
+            <h3>{{ course[1] }}</h3> <!-- Enrolled course name -->
+            <p>Teacher: {{ course[2] }}</p> <!-- Teacher name -->
+            <a href="{{ url_for('student_lessons', course_id=course[0]) }}">View Lessons</a>
+
+            <h4>Assignments:</h4>
+            {% if assignments_by_course.get(course[0]) %}
+                <ul>
+                    {% for assignment in assignments_by_course[course[0]] %}
+                        <li>
+                            {{ assignment[1] }} <!-- Assignment title -->
+                            <a href="{{ url_for('submit_assignment', assignment_id=assignment[0]) }}">Do Assignment</a>
+                            
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No assignments available for this course.</p>
+            {% endif %}
+            <a href="{{ url_for('student_grades', course_id=course[0]) }}">View Grade</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>You are not enrolled in any courses yet.</p>
+{% endif %}
+
+<a href="{{ url_for('logout') }}">Logout</a>

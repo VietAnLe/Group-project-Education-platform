@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - English Learning{% endblock %}
+
+{% block content %}
+    <h1>Welcome to the English Learning Platform</h1>
+    
+    {% if session['user_id'] %}
+        <p>Welcome, {{ session['username'] }}!</p>
+    {% else %}
+        <p>Welcome! Please <a href="{{ url_for('login') }}">Login</a> or <a href="{{ url_for('register') }}">Register</a> to access courses.</p>
+    {% endif %}
+    
+    <h2>Available Courses</h2>
+    <ul>
+        {% for course in courses %}
+            <li>{{ course[1] }}: {{ course[2] }}</li> <!-- course_name and description -->
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Manage Lessons</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        input, textarea, select {
+            width: 90%;
+            margin-bottom: 10px;
+        }
+        .action-buttons button {
+            margin: 5px 0;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teacher - Manage Lessons for Course: {{ course_name }}</h1>
+
+    <!-- Add New Lesson Section -->
+    <div class="form-section">
+        <h2>Add New Lesson</h2>
+        <form action="{{ url_for('teacher_manage_lessons', course_id=course_id) }}" method="POST" enctype="multipart/form-data">
+            <label for="lesson-title">Lesson Title:</label>
+            <input type="text" id="lesson-title" name="title" required><br><br>
+
+            <label for="content">Content:</label>
+            <textarea id="content" name="content" rows="4" required></textarea><br><br>
+
+            <label for="video-url">Video URL:</label>
+            <input type="url" id="video-url" name="video_url"><br><br>
+
+            <label for="video_file">Upload Video (Optional):</label>
+            <input type="file" id="video_file" name="video_file" accept="video/mp4"><br><br>
+
+            <label for="pdf_file">Upload PDF (Optional):</label>
+            <input type="file" id="pdf_file" name="pdf_file" accept=".pdf"><br><br>
+
+            <button type="submit" name="add_lesson">Add Lesson</button>
+        </form>
+    </div>
+
+    <!-- Existing Lessons Section -->
+<h2>Existing Lessons</h2>
+
+{% if lessons %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Video URL</th>
+        <th>Uploaded Video</th>
+        <th>Uploaded PDF</th>
+        <th>Actions</th>
+    </tr>
+    {% for lesson in lessons %}
+    <tr>
+        <td>{{ lesson[0] }}</td>
+        <td>{{ lesson[1] }}</td>
+        <td>{{ lesson[2] }}</td>
+        <td>
+            {% if lesson[3] %}
+                <a href="{{ lesson[3] }}" target="_blank">View Video URL</a>
+            {% else %}
+                No Video URL
+            {% endif %}
+        </td>
+        <td>
+            {% if lesson[5] %}
+                <a href="{{ url_for('static', filename=lesson[5]) }}" target="_blank">View Uploaded Video</a>
+            {% else %}
+                No video uploaded
+            {% endif %}
+        </td>
+        <td>
+            {% if lesson[4] %}
+                <a href="{{ url_for('static', filename=lesson[4]) }}" target="_blank">View Uploaded PDF</a>
+            {% else %}
+                No PDF uploaded
+            {% endif %}
+        </td>
+        <td class="action-buttons">
+            <!-- Update Form -->
+            <form id="update-{{ lesson[0] }}" action="{{ url_for('teacher_manage_lessons', course_id=course_id) }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="lesson_id" value="{{ lesson[0] }}">
+                
+                <!-- Title and Content Fields -->
+                <input type="text" name="title" value="{{ lesson[1] }}" required>
+                <textarea name="content" rows="4" required>{{ lesson[2] }}</textarea>
+
+                <!-- Existing Video URL (display only) -->
+                <input type="url" name="video_url" value="{{ lesson[3] }}" placeholder="Enter Video URL">
+                
+                <!-- Existing Video Upload (if new file uploaded) -->
+                <p>video_path</p>
+                <input type="file" name="video_file">
+                <p>pdf_path</p>
+                <!-- Existing PDF Upload (if new file uploaded) -->
+                <input type="file" name="pdf_file">
+
+                <!-- Submit Update -->
+                <button type="submit" name="update_lesson">Update</button>
+            </form>
+
+            <!-- Remove Form -->
+            <form action="{{ url_for('teacher_manage_lessons', course_id=course_id) }}" method="POST" style="display:inline;">
+                <input type="hidden" name="lesson_id" value="{{ lesson[0] }}">
+                <button type="submit" name="remove_lesson">Remove</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <p>No lessons available.</p>
+{% endif %}
+
+    <a href="{{ url_for('teacher_dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

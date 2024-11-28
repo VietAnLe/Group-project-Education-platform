@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Enrollments{% endblock %}
+
+{% block content %}
+    <h2>Student Enrollments</h2>
+    <ul>
+        {% for enrollment in enrollments %}
+            <li>{{ enrollment[0] }} is enrolled in {{ enrollment[1] }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

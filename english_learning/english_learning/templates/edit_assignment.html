@@ -1,0 +1,111 @@
+<form method="POST" action="{{ url_for('edit_assignment', course_id=course_id, assignment_id=assignment_id) }}">
+    <div class="form-group">
+        <label for="question_count">Number of Questions</label>
+        <input type="number" id="question_count" name="question_count" min="1" value="{{ questions|length }}" class="form-control">
+    </div>
+    <div id="questions-container">
+        {% for question in questions %}
+            <div class="question" id="question_{{ question[0] }}">
+                <input type="hidden" name="question_id_{{ question[0] }}" value="{{ question[0] }}">
+                
+                <label for="question_text_{{ question[3] }}">Question Text</label>
+                <input type="text" id="question_text_{{ question[3] }}" name="question_text_{{ question[3] }}" value="{{ question[3] }}">
+
+                <label for="question_type_{{ question[0] }}">Question Type</label>
+                <select name="question_type_{{ question[0] }}" id="question_type_{{ question[0] }}">
+                    <option value="FIB" {% if question[2] == 'FIB' %}selected{% endif %}>Fill in the Blank</option>
+                    <option value="MCQ" {% if question[2] == 'MCQ' %}selected{% endif %}>Multiple Choice</option>
+                </select>
+
+                <label for="correct_answer_{{ question[0] }}">Correct Answer</label>
+                <input type="text" name="correct_answer_{{ question[0] }}" value="{{ question[4] }}">
+
+                <div class="mcq-options" id="mcq-options-{{ question[0] }}" style="{% if question[2] == 'MCQ' %}display:block{% else %}display:none{% endif %}">
+                    <label for="option_a_{{ question[0] }}">Option A</label>
+                    <input type="text" name="option_a_{{ question[0] }}" value="{{ question[5] }}">
+
+                    <label for="option_b_{{ question[0] }}">Option B</label>
+                    <input type="text" name="option_b_{{ question[0] }}" value="{{ question[6] }}">
+
+                    <label for="option_c_{{ question[0] }}">Option C</label>
+                    <input type="text" name="option_c_{{ question[0] }}" value="{{ question[7] }}">
+
+                    <label for="option_d_{{ question[0] }}">Option D</label>
+                    <input type="text" name="option_d_{{ question[0] }}" value="{{ question[8] }}">
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <button type="submit">Save Changes</button>
+</form>
+
+<script>
+    // Update question count and dynamically generate/removes questions
+    document.getElementById('question_count').addEventListener('input', function(event) {
+        const questionCount = parseInt(event.target.value, 10);
+        const questionsContainer = document.getElementById('questions-container');
+        
+        // Clear current question forms
+        questionsContainer.innerHTML = '';
+
+        // Generate the required number of questions
+        for (let i = 1; i <= questionCount; i++) {
+            const questionForm = document.createElement('div');
+            questionForm.classList.add('question');
+            questionForm.id = `question_${i}`;
+
+            questionForm.innerHTML = `
+                <input type="hidden" name="question_id_${i}" value="">
+                <label for="question_text_${i}">Question Text</label>
+                <input type="text" name="question_text_${i}" id="question_text_${i}" class="form-control">
+                
+                <label for="question_type_${i}">Question Type</label>
+                <select name="question_type_${i}" id="question_type_${i}" class="form-control">
+                    <option value="FIB">Fill in the Blank</option>
+                    <option value="MCQ">Multiple Choice</option>
+                </select>
+
+                <label for="correct_answer_${i}">Correct Answer</label>
+                <input type="text" name="correct_answer_${i}" id="correct_answer_${i}" class="form-control">
+
+                <div id="mcq-options-${i}" class="mcq-options" style="display:none;">
+                    <label for="option_a_${i}">Option A</label>
+                    <input type="text" name="option_a_${i}" id="option_a_${i}" class="form-control">
+                    <label for="option_b_${i}">Option B</label>
+                    <input type="text" name="option_b_${i}" id="option_b_${i}" class="form-control">
+                    <label for="option_c_${i}">Option C</label>
+                    <input type="text" name="option_c_${i}" id="option_c_${i}" class="form-control">
+                    <label for="option_d_${i}">Option D</label>
+                    <input type="text" name="option_d_${i}" id="option_d_${i}" class="form-control">
+                </div>
+            `;
+
+            questionsContainer.appendChild(questionForm);
+
+            // Add change event listener to toggle MCQ options based on question type selection
+            const questionTypeSelect = document.getElementById(`question_type_${i}`);
+            questionTypeSelect.addEventListener('change', function() {
+                const mcqOptionsDiv = document.getElementById(`mcq-options-${i}`);
+                if (questionTypeSelect.value === 'MCQ') {
+                    mcqOptionsDiv.style.display = 'block';
+                } else {
+                    mcqOptionsDiv.style.display = 'none';
+                }
+            });
+        }
+    });
+
+    // Toggle visibility of MCQ options based on selected question type (FIB or MCQ)
+    document.querySelectorAll('select[name^="question_type_"]').forEach(function(selectElement) {
+        selectElement.addEventListener('change', function(event) {
+            const questionId = event.target.id.split('_')[2];
+            const mcqOptionsDiv = document.getElementById(`mcq-options-${questionId}`);
+            if (event.target.value === 'MCQ') {
+                mcqOptionsDiv.style.display = 'block';
+            } else {
+                mcqOptionsDiv.style.display = 'none';
+            }
+        });
+    });
+</script>

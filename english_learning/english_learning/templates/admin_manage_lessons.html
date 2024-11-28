@@ -1,0 +1,145 @@
+<h1>Manage Lessons</h1>
+
+<!-- Add New Lesson Section -->
+<h2>Add New Lesson</h2>
+<form action="{{ url_for('admin_manage_lessons') }}" method="POST" enctype="multipart/form-data">
+    <label for="course_id">Course:</label>
+    <select id="course_id" name="course_id" required>
+        <option value="" disabled selected>Select a course</option>
+        {% for course in courses %}
+            <option value="{{ course[0] }}">{{ course[1] }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" required><br><br>
+
+    <label for="content">Content:</label>
+    <textarea id="content" name="content" rows="4" required></textarea><br><br>
+
+    <label for="video_url">Video URL:</label>
+    <input type="url" id="video_url" name="video_url"><br><br>
+
+    <label for="video_file">Upload Video:</label>
+    <input type="file" id="video_file" name="video_file" accept="video/mp4"><br><br>
+
+    <label for="pdf_file">Upload PDF:</label>
+    <input type="file" id="pdf_file" name="pdf_file" accept=".pdf"><br><br>
+
+    <button type="submit" name="add_lesson">Add Lesson</button>
+</form>
+
+<!-- Existing Lessons Section -->
+<h1>Existing Lessons</h1>
+
+    {% if lessons %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Content</th>
+            <th>Video URL</th>
+            <th>Uploaded Video</th>
+            <th>Uploaded PDF</th>
+            <th>Course</th>
+        </tr>
+        {% for lesson in lessons %}
+        <tr>
+            <td>{{ lesson[0] }}</td>
+            <td>{{ lesson[1] }}</td>
+            <td>{{ lesson[2] }}</td>
+            <td>
+                {% if lesson[3] %}
+                    <a href="{{ lesson[3] }}" target="_blank">View Video URL</a>
+                {% else %}
+                    No Video URL
+                {% endif %}
+            </td>
+            <td>
+                {% if lesson[5] %}
+                    <a href="{{ url_for('static', filename=lesson[5][7:]) }}" target="_blank">View Uploaded Video</a>
+                {% else %}
+                    No video uploaded
+                {% endif %}
+            </td>
+            <td>
+                {% if lesson[4] %}
+                    <a href="{{ url_for('static', filename=lesson[4][7:]) }}" target="_blank">View Uploaded PDF</a>
+                {% else %}
+                    No PDF uploaded
+                {% endif %}
+            </td>
+            <td>{{ lesson[6] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p>No lessons available.</p>
+    {% endif %}
+
+<!-- Update Lessons Section -->
+<h2>Update Lessons</h2>
+{% if lessons %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Video URL</th>
+        <th>Uploaded Video</th>
+        <th>Uploaded PDF</th>
+        <th>Course</th>
+        <th>Actions</th>
+    </tr>
+    {% for lesson in lessons %}
+    <tr>
+        <td>{{ lesson[0] }}</td>
+        <td>
+            <input type="text" name="title" value="{{ lesson[1] }}" form="update-{{ lesson[0] }}">
+        </td>
+        <td>
+            <textarea name="content" form="update-{{ lesson[0] }}">{{ lesson[2] }}</textarea>
+        </td>
+        <td>
+            {% if lesson[3] %}
+            {% else %}
+                No video url uploaded
+            {% endif %}
+            <input type="url" name="video_url" value="{{ lesson[3] }}" form="update-{{ lesson[0] }}">
+        </td>
+        <td>
+            {% if lesson[5] %}
+            {% else %}
+                No video uploaded
+            {% endif %}
+            <input type="file" name="video_file" form="update-{{ lesson[0] }}">
+        </td>
+        <td>
+            {% if lesson[4] %}
+            {% else %}
+                No PDF uploaded
+            {% endif %}
+            <input type="file" name="pdf_file" form="update-{{ lesson[0] }}">
+        </td>
+        <td>{{ lesson[6] }}</td>
+        <td>
+            <!-- Update Form -->
+            <form id="update-{{ lesson[0] }}" action="{{ url_for('admin_manage_lessons') }}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="lesson_id" value="{{ lesson[0] }}">
+                <button type="submit" name="update_lesson">Update</button>
+            </form>
+
+            <!-- Remove Form -->
+            <form action="{{ url_for('admin_manage_lessons') }}" method="POST" style="display:inline;">
+                <input type="hidden" name="lesson_id" value="{{ lesson[0] }}">
+                <button type="submit" name="remove_lesson">Remove</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <p>No lessons available.</p>
+{% endif %}
+
+<a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>

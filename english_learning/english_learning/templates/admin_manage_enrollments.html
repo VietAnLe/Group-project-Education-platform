@@ -1,0 +1,30 @@
+<h1>Manage Student Enrollments</h1>
+
+<h2>Existing Enrollments</h2>
+{% if enrollments %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Actions</th>
+        </tr>
+        {% for enrollment in enrollments %}
+        <tr>
+            <td>{{ enrollment[0] }}</td>
+            <td>{{ enrollment[1] }}</td>
+            <td>{{ enrollment[2] }}</td>
+            <td>
+                <!-- Remove Enrollment -->
+                <form action="{{ url_for('admin_manage_enrollments') }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="enrollment_id" value="{{ enrollment[0] }}">
+                    <button type="submit" name="remove_enrollment">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No enrollments available.</p>
+{% endif %}
+<a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
